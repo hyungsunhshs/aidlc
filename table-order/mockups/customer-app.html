@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>테이블오더 - 고객용</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .table-info {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 2px solid #eee;
+            position: sticky;
+            top: 56px;
+            z-index: 99;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 15px;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .nav-tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            font-weight: 600;
+        }
+        
+        /* Page Container */
+        .page {
+            display: none;
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* Start Session Page */
+        .start-session {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+        }
+        
+        .start-session-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+        }
+        
+        .start-session h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        
+        .start-session p {
+            color: #666;
+            margin-bottom: 32px;
+            font-size: 16px;
+        }
+        
+        .btn-start {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            min-width: 200px;
+            min-height: 60px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-start:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Category Tabs */
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin-bottom: 16px;
+        }
+        
+        .category-tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 14px;
+            transition: all 0.3s;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .category-tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .menu-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .menu-image {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        
+        .menu-info {
+            padding: 14px;
+        }
+        
+        .menu-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #333;
+        }
+        
+        .menu-desc {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .menu-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .menu-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .btn-add {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .btn-add:hover {
+            background: #5a6fd6;
+        }
+        
+        /* Cart */
+        .cart-items {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-right: 14px;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .cart-item-price {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .qty-btn {
+            width: 36px;
+            height: 36px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qty-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .qty-value {
+            font-size: 18px;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .btn-delete {
+            color: #ff6b6b;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            margin-left: 10px;
+        }
+        
+        /* Cart Summary */
+        .cart-summary {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+        }
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .cart-total-label {
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .cart-total-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .cart-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn-clear {
+            flex: 1;
+            padding: 16px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .btn-order {
+            flex: 2;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-order:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* Order History */
+        .order-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .order-number {
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        .order-status {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .status-waiting {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-preparing {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-complete {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .order-items {
+            margin-bottom: 12px;
+        }
+        
+        .order-item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #666;
+        }
+        
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+        }
+        
+        .order-time {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .order-total {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        /* Floating Cart Button */
+        .floating-cart {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff6b6b;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Order Success Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 350px;
+            margin: 20px;
+        }
+        
+        .modal-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .modal h2 {
+            margin-bottom: 12px;
+            color: #333;
+        }
+        
+        .modal p {
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .order-number-display {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 16px 0;
+        }
+        
+        .countdown {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+        
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 8px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>🍽️ 맛있는 식당</h1>
+        <span class="table-info">테이블 5번</span>
+    </header>
+    
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <button class="nav-tab active" onclick="showPage('menu')">메뉴</button>
+        <button class="nav-tab" onclick="showPage('cart')">장바구니 <span id="cart-count">(2)</span></button>
+        <button class="nav-tab" onclick="showPage('orders')">주문내역</button>
+    </nav>
+    
+    <!-- Start Session Page (Initially Hidden) -->
+    <div class="page" id="page-start">
+        <div class="start-session">
+            <div class="start-session-icon">👋</div>
+            <h2>환영합니다!</h2>
+            <p>주문을 시작하시려면<br>아래 버튼을 눌러주세요</p>
+            <button class="btn-start" onclick="startSession()">주문 시작하기</button>
+        </div>
+    </div>
+    
+    <!-- Menu Page -->
+    <div class="page active" id="page-menu">
+        <!-- Category Tabs -->
+        <div class="category-tabs">
+            <button class="category-tab active">전체</button>
+            <button class="category-tab">🍖 메인</button>
+            <button class="category-tab">🥗 사이드</button>
+            <button class="category-tab">🍜 면류</button>
+            <button class="category-tab">🍺 음료</button>
+            <button class="category-tab">🍰 디저트</button>
+        </div>
+        
+        <!-- Menu Grid -->
+        <div class="menu-grid">
+            <div class="menu-card">
+                <div class="menu-image">🍖</div>
+                <div class="menu-info">
+                    <div class="menu-name">양념치킨</div>
+                    <div class="menu-desc">달콤 매콤한 양념이 듬뿍</div>
+                    <div class="menu-bottom">
+                        <span class="menu-price">18,000원</span>
+                        <button class="btn-add" onclick="addToCart('양념치킨', 18000)">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-card">
+                <div class="menu-image">🍗</div>
+                <div class="menu-info">
+                    <div class="menu-name">후라이드치킨</div>
+                    <div class="menu-desc">바삭바삭 고소한 맛</div>
+                    <div class="menu-bottom">
+                        <span class="menu-price">17,000원</span>
+                        <button class="btn-add" onclick="addToCart('후라이드치킨', 17000)">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-card">
+                <div class="menu-image">🍕</div>
+                <div class="menu-info">
+                    <div class="menu-name">치즈피자</div>
+                    <div class="menu-desc">모짜렐라 치즈 듬뿍</div>
+                    <div class="menu-bottom">
+                        <span class="menu-price">15,000원</span>
+                        <button class="btn-add" onclick="addToCart('치즈피자', 15000)">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-card">
+                <div class="menu-image">🍜</div>
+                <div class="menu-info">
+                    <div class="menu-name">짜장면</div>
+                    <div class="menu-desc">춘장 소스가 일품</div>
+                    <div class="menu-bottom">
+                        <span class="menu-price">8,000원</span>
+                        <button class="btn-add" onclick="addToCart('짜장면', 8000)">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-card">
+                <div class="menu-image">🥗</div>
+                <div class="menu-info">
+                    <div class="menu-name">시저샐러드</div>
+                    <div class="menu-desc">신선한 채소와 드레싱</div>
+                    <div class="menu-bottom">
+                        <span class="menu-price">9,000원</span>
+                        <button class="btn-add" onclick="addToCart('시저샐러드', 9000)">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-card">
+                <div class="menu-image">🍺</div>
+                <div class="menu-info">
+                    <div class="menu-name">생맥주</div>
+                    <div class="menu-desc">시원한 생맥주 500ml</div>
+                    <div class="menu-bottom">
+                        <span class="menu-price">5,000원</span>
+                        <button class="btn-add" onclick="addToCart('생맥주', 5000)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cart Page -->
+    <div class="page" id="page-cart">
+        <div class="cart-items">
+            <div class="cart-item">
+                <div class="cart-item-image">🍖</div>
+                <div class="cart-item-info">
+                    <div class="cart-item-name">양념치킨</div>
+                    <div class="cart-item-price">18,000원</div>
+                </div>
+                <div class="quantity-control">
+                    <button class="qty-btn">-</button>
+                    <span class="qty-value">1</span>
+                    <button class="qty-btn">+</button>
+                </div>
+                <button class="btn-delete">🗑️</button>
+            </div>
+            
+            <div class="cart-item">
+                <div class="cart-item-image">🍺</div>
+                <div class="cart-item-info">
+                    <div class="cart-item-name">생맥주</div>
+                    <div class="cart-item-price">5,000원</div>
+                </div>
+                <div class="quantity-control">
+                    <button class="qty-btn">-</button>
+                    <span class="qty-value">2</span>
+                    <button class="qty-btn">+</button>
+                </div>
+                <button class="btn-delete">🗑️</button>
+            </div>
+        </div>
+        
+        <div class="cart-summary">
+            <div class="cart-total">
+                <span class="cart-total-label">총 주문금액</span>
+                <span class="cart-total-price">28,000원</span>
+            </div>
+            <div class="cart-actions">
+                <button class="btn-clear">비우기</button>
+                <button class="btn-order" onclick="placeOrder()">주문하기</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Orders Page -->
+    <div class="page" id="page-orders">
+        <div class="order-card">
+            <div class="order-header">
+                <span class="order-number">주문 #1234</span>
+                <span class="order-status status-preparing">준비중</span>
+            </div>
+            <div class="order-items">
+                <div class="order-item-row">
+                    <span>양념치킨 x 1</span>
+                    <span>18,000원</span>
+                </div>
+                <div class="order-item-row">
+                    <span>생맥주 x 2</span>
+                    <span>10,000원</span>
+                </div>
+            </div>
+            <div class="order-footer">
+                <span class="order-time">14:32</span>
+                <span class="order-total">28,000원</span>
+            </div>
+        </div>
+        
+        <div class="order-card">
+            <div class="order-header">
+                <span class="order-number">주문 #1233</span>
+                <span class="order-status status-complete">완료</span>
+            </div>
+            <div class="order-items">
+                <div class="order-item-row">
+                    <span>짜장면 x 2</span>
+                    <span>16,000원</span>
+                </div>
+            </div>
+            <div class="order-footer">
+                <span class="order-time">14:15</span>
+                <span class="order-total">16,000원</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Floating Cart Button -->
+    <button class="floating-cart" onclick="showPage('cart')" id="floating-cart">
+        🛒
+        <span class="cart-badge">2</span>
+    </button>
+    
+    <!-- Order Success Modal -->
+    <div class="modal-overlay" id="order-modal">
+        <div class="modal">
+            <div class="modal-icon">✅</div>
+            <h2>주문 완료!</h2>
+            <p>주문이 접수되었습니다</p>
+            <div class="order-number-display">#1235</div>
+            <p class="countdown">5초 후 메뉴 화면으로 이동합니다</p>
+        </div>
+    </div>
+    
+    <script>
+        function showPage(page) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            
+            // Show selected page
+            document.getElementById('page-' + page).classList.add('active');
+            document.querySelectorAll('.nav-tab')[
+                page === 'menu' ? 0 : page === 'cart' ? 1 : 2
+            ].classList.add('active');
+            
+            // Show/hide floating cart
+            document.getElementById('floating-cart').style.display = 
+                page === 'cart' ? 'none' : 'flex';
+        }
+        
+        function startSession() {
+            document.getElementById('page-start').classList.remove('active');
+            document.getElementById('page-menu').classList.add('active');
+            document.querySelector('.nav-tabs').style.display = 'flex';
+        }
+        
+        function addToCart(name, price) {
+            // Visual feedback
+            const btn = event.target;
+            btn.textContent = '✓';
+            btn.style.background = '#4CAF50';
+            setTimeout(() => {
+                btn.textContent = '+';
+                btn.style.background = '#667eea';
+            }, 500);
+        }
+        
+        function placeOrder() {
+            document.getElementById('order-modal').classList.add('active');
+            
+            // Auto redirect after 5 seconds
+            setTimeout(() => {
+                document.getElementById('order-modal').classList.remove('active');
+                showPage('menu');
+            }, 5000);
+        }
+        
+        // Category tab click handler
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
